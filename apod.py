@@ -51,10 +51,6 @@ class API:
                         print(".", end='', flush=True)
 
     def downloadAPOD(self, year, month, date):
-        appendix = str(year) + str(month) + str(date) + ".html"
-        apod = str(requests.get(self.apod_daily +
-                                appendix).content).splitlines()
-
         try: 
             dict = self.parse(year, month, date)
             path = dict['path']
