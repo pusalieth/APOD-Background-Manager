@@ -55,19 +55,22 @@ class API:
         apod = str(requests.get(self.apod_daily +
                                 appendix).content).splitlines()
 
-        dict = self.parse(year, month, date)
-        path = dict['path']
-        filename = dict['filename']
-        print('\nDownloading... %s: %s, %s, %s' %
-              (filename, month, date, year))
+        try: 
+            dict = self.parse(year, month, date)
+            path = dict['path']
+            filename = dict['filename']
+            print('\nDownloading... %s: %s, %s, %s' %
+                (filename, month, date, year))
 
-        # download image
-        image = requests.get(self.apod_url + path).content
-        image_data = base64.b64encode(image)
+            # download image
+            image = requests.get(self.apod_url + path).content
+            image_data = base64.b64encode(image)
 
-        # add record
-        self.db.addDay(path, year=year,
-                       month=month, date=date, filename=filename, data=image_data)
+            # add record
+            self.db.addDay(path, year=year,
+                        month=month, date=date, filename=filename, data=image_data)
+        except Exception as e:
+            print('\nDownload failed due to %s' % e)
 
     def downloadArchive(self):
         archive_html = requests.get(self.archive_url).content
@@ -101,27 +104,30 @@ class API:
 
     def parse(self, year, month, date):
         appendix = str(year)[2:] + str(month) + str(date) + ".html"
-        apod = str(requests.get(self.apod_daily +
+        try:
+            apod = str(requests.get(self.apod_daily +
                                 appendix).content.decode('ascii')).splitlines()
+            
+            found = False
+            for line in list(apod):
+                for filetype in self.filetypes:
+                    if('href=\"image' in line):
+                        image_regex = "href=\"image/.*\""
+                        path = re.search(image_regex, str(line)).group(0)[6:-1]
+                        found = True
+                        if(filetype in line):
+                            filename = str(
+                                re.search('[^/]*.[0-9a-zA-Z]*%s' % filetype, path).group(0))
+                if(found):
+                    break
+            dict = {
+                "path": path,
+                "filename": filename
+            }
 
-        found = False
-        for line in list(apod):
-            for filetype in self.filetypes:
-                if('href=\"image' in line):
-                    image_regex = "href=\"image/.*\""
-                    path = re.search(image_regex, str(line)).group(0)[6:-1]
-                    found = True
-                    if(filetype in line):
-                        filename = str(
-                            re.search('[^/]*.[0-9a-zA-Z]*%s' % filetype, path).group(0))
-            if(found):
-                break
-        dict = {
-            "path": path,
-            "filename": filename
-        }
-
-        return dict
+            return dict
+        except Exception as e:
+            raise e
 
 
 if __name__ == "__main__":
