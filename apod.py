@@ -20,7 +20,7 @@ class API:
                        'July', 'August', 'September', 'October', 'November', 'December']
         self.days = ['0', '31', '28', '31', '30', '31', '30',
                      '31', '31', '30', '31', '30', '31']
-        self.filetypes = ['.jpg', '.gif']
+        self.filetypes = ['.jpg', '.gif', 'png']
 
         # db manager
         self.db = database_manager.MANAGER(client='apod')
@@ -100,9 +100,10 @@ class API:
 
     def parse(self, year, month, date):
         appendix = str(year)[2:] + str(month) + str(date) + ".html"
+        apod = apod = requests.get(self.apod_daily +
+                                appendix).content
         try:
-            apod = str(requests.get(self.apod_daily +
-                                appendix).content.decode('ascii')).splitlines()
+            apod = str(apod.decode('ascii', errors="ignore")).splitlines()
             
             found = False
             for line in list(apod):
@@ -116,6 +117,8 @@ class API:
                                 re.search('[^/]*.[0-9a-zA-Z]*%s' % filetype, path).group(0))
                 if(found):
                     break
+            if(not found):
+                raise '\nCan\'t Download %s %s %s due to incorrect filetype\nMost likely an Applet' % (year, month, date)
             dict = {
                 "path": path,
                 "filename": filename
@@ -123,6 +126,8 @@ class API:
 
             return dict
         except Exception as e:
+            #print(apod)
+            print('%s %s %s' % (year, month, date))
             raise e
 
 
