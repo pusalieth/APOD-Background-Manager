@@ -24,8 +24,8 @@ class API:
 
         # db manager
         self.db = database_manager.MANAGER(client='apod')
-        self.wrong_filetype = self.db.getBadDays()
-        self.too_large = self.db.getTooLargeDays()
+        self.wrong_filetype = self.db.getRecords(type='bad_days')
+        self.too_large = self.db.getRecords(type='too_large')
 
     def downloadPrim(self):
         for year in range(self.year_start, self.year_start + 1):
@@ -96,8 +96,7 @@ class API:
             dict = self.parse(year, month, date)
             path = dict['path']
             filename = dict['filename']
-            image_size = int(requests.head(
-                self.apod_url + path).headers['content-length'])
+            image_size = int(requests.get(self.apod_url + path, stream=True).headers['Content-length'])
             if(image_size > 10133333):
                 raise ValueError('image file being to large')
 
@@ -112,9 +111,9 @@ class API:
                            month=month, date=date, filename=filename, data=image_data)
         except Exception as e:
             if('large' in str(e)):
-                self.db.addTooLargeDay(year=year, month=month, date=date)
+                self.db.addRecord(type='too_large', year=year, month=month, date=date)
             elif('incompatible' in str(e)):
-                self.db.addBadDay(year=year, month=month, date=date)
+                self.db.addRecord(type='bad_days', year=year, month=month, date=date)
             print('\nDownload failed due to %s\t%s %s %s' %
                   (e, year, month, date))
 
@@ -182,5 +181,5 @@ class API:
 if __name__ == "__main__":
     main = API()
     # main.downloadAPOD('2011', '12', '25')
-    main.download_years(start_year=1997, end_year=2020)
+    main.download_years(start_year=2005, end_year=2020)
     # main.temp()

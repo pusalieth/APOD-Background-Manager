@@ -49,12 +49,12 @@ class MANAGER:
         else:
             return False
 
-    def addTooLargeDay(self, year, month, date):
+    def addRecord(self, type, year, month, date):
         result = self.db["database"].find(
             {
-                "too_large.year": year,
-                "too_large.month": month,
-                "too_large.day": date
+                type + ".year": year,
+                type + ".month": month,
+                type + ".day": date
             }
         ).count()
 
@@ -62,67 +62,33 @@ class MANAGER:
             sub_dict = {"year": year,
                         "month": month,
                         "day": date}
-            dict = {"too_large": sub_dict}
+            dict = {type: sub_dict}
             if(result == 0):
                 self.db["database"].insert(dict)
         except Exception as e:
             print('Insert failed due to %s' % e)
 
-    def getTooLargeDays(self):
+    def getRecords(self, type):
         result = self.db["database"].find(
             {
-                "too_large": {'$exists': 1}
+                type: {'$exists': 1}
             }
         )
 
-        too_large = []
+        temp = []
 
         for record in result:
-            this_record = record['too_large']
-            too_large.append(this_record['year'] + this_record['month'] + this_record['day'])
+            this_record = record[type]
+            temp.append(this_record['year'] + this_record['month'] + this_record['day'])
 
-        return too_large
+        return temp
 
-    def addBadDay(self, year, month, date):
+    def removeRecord(self, type, year, month, date):
         result = self.db["database"].find(
             {
-                "bad_days.year": year,
-                "bad_days.month": month,
-                "bad_days.day": date
-            }
-        ).count()
-
-        try:
-            sub_dict = {"year": year,
-                        "month": month,
-                        "day": date}
-            dict = {"bad_days": sub_dict}
-            if(result == 0):
-                self.db["database"].insert(dict)
-        except Exception as e:
-            print('Insert failed due to %s' % e)
-
-    def getBadDays(self):
-        result = self.db["database"].find(
-            {
-                "bad_days": {'$exists': 1}
-            }
-        )
-
-        bad_days = []
-
-        for record in result:
-            this_record = record['bad_days']
-            bad_days.append(this_record['year'] + this_record['month'] + this_record['day'])
-
-        return bad_days
-
-    def removeBadDay(self, year, month, date):
-        result = self.db["database"].find(
-            {
-                "bad_days.year": year,
-                "bad_days.month": month,
-                "bad_days.day": date
+                type + ".year": year,
+                type + ".month": month,
+                type + ".day": date
             }
         )
 
