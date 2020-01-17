@@ -24,6 +24,7 @@ class API:
 
         # db manager
         self.db = database_manager.MANAGER(client='apod')
+        self.loaded_days = self.db.getRecords(type='images')
         self.wrong_filetype = self.db.getRecords(type='bad_days')
         self.too_large = self.db.getRecords(type='too_large')
 
@@ -50,7 +51,9 @@ class API:
                     this_month = str(month).rjust(2, '0')
                     this_day = str(day).rjust(2, '0')
 
-                    if(str(this_year + this_month + this_day) in self.wrong_filetype):
+                    if(str(this_year + this_month + this_day) in self.loaded_days):
+                        self.loaded_days.pop(0)
+                    elif(str(this_year + this_month + this_day) in self.wrong_filetype):
                         print(".", end='', flush=True)
                         self.wrong_filetype.pop(0)
                     elif(str(this_year + this_month + this_day) in self.too_large):
@@ -71,7 +74,9 @@ class API:
                     this_month = str(month).rjust(2, '0')
                     this_day = str(day).rjust(2, '0')
 
-                    if(str(this_year + this_month + this_day) in self.wrong_filetype):
+                    if(str(this_year + this_month + this_day) in self.loaded_days):
+                        self.loaded_days.pop(0)
+                    elif(str(this_year + this_month + this_day) in self.wrong_filetype):
                         print(".", end='', flush=True)
                         self.wrong_filetype.pop(0)
                     elif(str(this_year + this_month + this_day) in self.too_large):

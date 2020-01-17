@@ -79,6 +79,7 @@ class MANAGER:
         temp = []
 
         for record in result:
+            print(".", end='', flush=True)
             this_record = record[type]
             temp.append(this_record['year'] + this_record['month'] + this_record['day'])
 
