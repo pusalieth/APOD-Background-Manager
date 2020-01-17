@@ -28,48 +28,25 @@ class API:
         self.wrong_filetype = self.db.getRecords(type='bad_days')
         self.too_large = self.db.getRecords(type='too_large')
 
-    def downloadPrim(self):
-        for year in range(self.year_start, self.year_start + 1):
-            for month in range(self.month_start, 12 + 1):
-                for day in range(self.date_start, int(self.days[month]) + 1):
-                    this_year = str(year)[2:]
-                    this_month = str(month).rjust(2, '0')
-                    this_day = str(day).rjust(2, '0')
-                    self.downloadAPOD(
-                        year=this_year, month=this_month, date=this_day)
+    def download_years(self, start_year=None, end_year=None):
+        if(start_year == None):
+            start_year = self.year_start
 
-    # 11, 1, 96 url change
-    def downloadAll(self):
-        self.download_years(start_year=self.year_start,
-                            end_year=self.time_now.year)
+        if(end_year == None):
+            end_year = self.time_now.year
 
-    def downloadAll_1995_thru_1997(self):
-        for year in range(self.year_start, 1997):
-            for month in range(1, 12 + 1):
-                for day in range(1, int(self.days[month]) + 1):
-                    this_year = str(year)
-                    this_month = str(month).rjust(2, '0')
-                    this_day = str(day).rjust(2, '0')
-
-                    if(str(this_year + this_month + this_day) in self.loaded_days):
-                        self.loaded_days.pop(0)
-                    elif(str(this_year + this_month + this_day) in self.wrong_filetype):
-                        print(".", end='', flush=True)
-                        self.wrong_filetype.pop(0)
-                    elif(str(this_year + this_month + this_day) in self.too_large):
-                        print(".", end='', flush=True)
-                        self.too_large.pop(0)
-                    elif(self.db.checkDay(year=this_year, month=this_month, date=this_day)):
-                        self.downloadAPOD(
-                            year=this_year, month=this_month, date=this_day)
-                    else:
-                        print(".", end='', flush=True)
-
-    def download_years(self, start_year, end_year):
         end = False
         for year in range(start_year, end_year + 1):
-            for month in range(1, 12 + 1):
-                for day in range(1, int(self.days[month]) + 1):
+            if((year == self.year_start)):
+                    start_month = self.month_start
+            else:
+                start_month = 1
+            for month in range(start_month, 12 + 1):
+                if((year == self.year_start) and (month == self.time_now.month)):
+                    start_day = self.date_start
+                else:
+                    start_day = 1
+                for day in range(start_day, int(self.days[month]) + 1):
                     this_year = str(year)
                     this_month = str(month).rjust(2, '0')
                     this_day = str(day).rjust(2, '0')
@@ -77,10 +54,8 @@ class API:
                     if(str(this_year + this_month + this_day) in self.loaded_days):
                         self.loaded_days.pop(0)
                     elif(str(this_year + this_month + this_day) in self.wrong_filetype):
-                        print(".", end='', flush=True)
                         self.wrong_filetype.pop(0)
                     elif(str(this_year + this_month + this_day) in self.too_large):
-                        print(".", end='', flush=True)
                         self.too_large.pop(0)
                     elif(self.db.checkDay(year=this_year, month=this_month, date=this_day)):
                         self.downloadAPOD(
@@ -186,5 +161,4 @@ class API:
 if __name__ == "__main__":
     main = API()
     # main.downloadAPOD('2011', '12', '25')
-    main.download_years(start_year=2005, end_year=2020)
-    # main.temp()
+    main.download_years(start_year=None, end_year=1998)
