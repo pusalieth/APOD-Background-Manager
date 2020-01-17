@@ -9,18 +9,23 @@ import sys
 
 class API:
     def __init__(self):
-        self.archive_url = "https://apod.nasa.gov/apod/archivepix.html"
-        self.apod_daily = "https://apod.nasa.gov/apod/ap"
+        # fixed urls and filetypes
         self.apod_url = "https://apod.nasa.gov/apod/"
+        self.archive_url = self.apod_url + "archivepix.html"
+        self.apod_daily = self.apod_url + "ap"
+        self.filetypes = ['.jpg', '.gif', '.png', '.jpeg', '.JPG']
+        
+        # time order management
         self.year_start = 1995
         self.month_start = 6
         self.date_start = 25
         self.time_now = datetime.datetime.now()
+
+        # month list and corresponding days in the month
         self.months = ['January', 'February', 'March', 'April', 'May', 'June',
                        'July', 'August', 'September', 'October', 'November', 'December']
         self.days = ['0', '31', '28', '31', '30', '31', '30',
                      '31', '31', '30', '31', '30', '31']
-        self.filetypes = ['.jpg', '.gif', '.png', '.jpeg', '.JPG']
 
         # db manager
         self.db = database_manager.MANAGER(client='apod')
