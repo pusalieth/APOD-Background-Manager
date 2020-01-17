@@ -59,6 +59,7 @@ class MANAGER:
         ).count()
 
         try:
+            print(result)
             sub_dict = {"year": year,
                         "month": month,
                         "day": date}
@@ -80,6 +81,8 @@ class MANAGER:
         for record in result:
             this_record = record[type]
             temp.append(this_record['year'] + this_record['month'] + this_record['day'])
+
+        temp.sort()
 
         return temp
 
