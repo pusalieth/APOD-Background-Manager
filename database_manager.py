@@ -10,6 +10,9 @@ class MANAGER:
     def setClient(self, client):
         self.db = self.client[client]
 
+    def getRandomDay(self):
+        print()
+
     def addDay(self, url, year, month, date, filename, data):
         sub_dict = {"url": url,
                     "year": year,
@@ -45,6 +48,89 @@ class MANAGER:
             return True
         else:
             return False
+
+    def addTooLargeDay(self, year, month, date):
+        result = self.db["database"].find(
+            {
+                "too_large.year": year,
+                "too_large.month": month,
+                "too_large.day": date
+            }
+        ).count()
+
+        try:
+            sub_dict = {"year": year,
+                        "month": month,
+                        "day": date}
+            dict = {"too_large": sub_dict}
+            if(result == 0):
+                self.db["database"].insert(dict)
+        except Exception as e:
+            print('Insert failed due to %s' % e)
+
+    def getTooLargeDays(self):
+        result = self.db["database"].find(
+            {
+                "too_large": {'$exists': 1}
+            }
+        )
+
+        too_large = []
+
+        for record in result:
+            this_record = record['too_large']
+            too_large.append(this_record['year'] + this_record['month'] + this_record['day'])
+
+        return too_large
+
+    def addBadDay(self, year, month, date):
+        result = self.db["database"].find(
+            {
+                "bad_days.year": year,
+                "bad_days.month": month,
+                "bad_days.day": date
+            }
+        ).count()
+
+        try:
+            sub_dict = {"year": year,
+                        "month": month,
+                        "day": date}
+            dict = {"bad_days": sub_dict}
+            if(result == 0):
+                self.db["database"].insert(dict)
+        except Exception as e:
+            print('Insert failed due to %s' % e)
+
+    def getBadDays(self):
+        result = self.db["database"].find(
+            {
+                "bad_days": {'$exists': 1}
+            }
+        )
+
+        bad_days = []
+
+        for record in result:
+            this_record = record['bad_days']
+            bad_days.append(this_record['year'] + this_record['month'] + this_record['day'])
+
+        return bad_days
+
+    def removeBadDay(self, year, month, date):
+        result = self.db["database"].find(
+            {
+                "bad_days.year": year,
+                "bad_days.month": month,
+                "bad_days.day": date
+            }
+        )
+
+        try:
+            if(result.count() > 0):
+                self.db["database"].delete_one(dict)
+        except Exception as e:
+            print('Insert failed due to %s' % e)
 
     def removeDuplicate(self, year, month, date):
         print()
