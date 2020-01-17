@@ -42,7 +42,7 @@ class API:
             else:
                 start_month = 1
             for month in range(start_month, 12 + 1):
-                if((year == self.year_start) and (month == self.time_now.month)):
+                if((year == self.year_start) and (month == self.month_start)):
                     start_day = self.date_start
                 else:
                     start_day = 1
@@ -63,7 +63,7 @@ class API:
                     else:
                         print(".", end='', flush=True)
 
-                    if((year == end_year) and (month == self.time_now.month) and (day == self.time_now.day - 1)):
+                    if((year == self.year_start) and (month == self.time_now.month) and (day == self.time_now.day - 1)):
                         end = True
                         break
                 if(end):
@@ -161,4 +161,4 @@ class API:
 if __name__ == "__main__":
     main = API()
     # main.downloadAPOD('2011', '12', '25')
-    main.download_years(start_year=None, end_year=1998)
+    main.download_years(start_year=1998, end_year=2001)
