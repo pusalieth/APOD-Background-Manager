@@ -10,8 +10,16 @@ class MANAGER:
     def setClient(self, client):
         self.db = self.client[client]
 
-    def getRandomDay(self):
-        print()
+    def getDay(self, year, month, date):
+        result = self.db["database"].find_one(
+            {
+                "images.year": year,
+                "images.month": month,
+                "images.day": date
+            }
+        )
+
+        return result
 
     def addDay(self, url, year, month, date, filename, data):
         sub_dict = {"url": url,

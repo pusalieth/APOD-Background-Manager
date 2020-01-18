@@ -5,6 +5,7 @@ import os
 import database_manager
 import base64
 import sys
+import random
 
 
 class API:
@@ -32,6 +33,13 @@ class API:
         self.loaded_days = self.db.getRecords(type='images')
         self.wrong_filetype = self.db.getRecords(type='bad_days')
         self.too_large = self.db.getRecords(type='too_large')
+
+    def getRandomDay(self):
+        selected_day = random.choice(self.loaded_days)
+        this_year = selected_day[:4]
+        this_month = selected_day[4:6]
+        this_day = selected_day[6:8]
+        random_day = self.db.getDay(year=this_year, month=this_month, date=this_day)
 
     def download_years(self, start_year=None, end_year=None):
         if(start_year == None):
@@ -166,4 +174,5 @@ class API:
 if __name__ == "__main__":
     main = API()
     # main.downloadAPOD('2011', '12', '25')
-    main.download_years(start_year=None, end_year=None)
+    # main.download_years(start_year=None, end_year=None)
+    main.getRandomDay()
