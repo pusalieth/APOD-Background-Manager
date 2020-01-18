@@ -68,7 +68,7 @@ class API:
                     else:
                         print(".", end='', flush=True)
 
-                    if((year == self.year_start) and (month == self.time_now.month) and (day == self.time_now.day - 1)):
+                    if((year == self.time_now.year) and (month == self.time_now.month) and (day == self.time_now.day)):
                         end = True
                         break
                 if(end):
@@ -166,4 +166,4 @@ class API:
 if __name__ == "__main__":
     main = API()
     # main.downloadAPOD('2011', '12', '25')
-    main.download_years(start_year=1998, end_year=2001)
+    main.download_years(start_year=None, end_year=None)
