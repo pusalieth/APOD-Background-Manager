@@ -41,6 +41,9 @@ class API:
         this_day = selected_day[6:8]
         random_day = self.db.getDay(year=this_year, month=this_month, date=this_day)
 
+    def update_DB(self):
+        self.download_years()
+
     def download_years(self, start_year=None, end_year=None):
         if(start_year == None):
             start_year = self.year_start
@@ -174,5 +177,5 @@ class API:
 if __name__ == "__main__":
     main = API()
     # main.downloadAPOD('2011', '12', '25')
-    # main.download_years(start_year=None, end_year=None)
-    main.getRandomDay()
+    main.update_DB()
+    # main.getRandomDay()
